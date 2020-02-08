@@ -10,9 +10,11 @@ GraphNode::~GraphNode()
 {
     //// STUDENT CODE
     ////
-
-    delete _chatBot; 
-
+    // Remove this for Task 0
+    // if (_chatBot != NULL) {
+    //     std::cout << "Graph node destructor." << std::endl;
+    //     delete _chatBot; 
+    // }
     ////
     //// EOF STUDENT CODE
 }
