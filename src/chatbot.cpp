@@ -11,6 +11,7 @@
 // constructor WITHOUT memory allocation
 ChatBot::ChatBot()
 {
+    std::cout << "In ChatBot Constructor with no memory allocation. \n";
     // invalidate data handles
     _image = nullptr;
     _chatLogic = nullptr;
@@ -20,7 +21,7 @@ ChatBot::ChatBot()
 // constructor WITH memory allocation
 ChatBot::ChatBot(std::string filename)
 {
-    std::cout << "ChatBot Constructor" << std::endl;
+    std::cout << "In ChatBot Constructor with memory allocation. \n";
     
     // invalidate data handles
     _chatLogic = nullptr;
@@ -32,12 +33,13 @@ ChatBot::ChatBot(std::string filename)
 
 ChatBot::~ChatBot()
 {
-    std::cout << "ChatBot Destructor" << std::endl;
+    std::cout << "In ChatBot Destructor" << std::endl;
 
     // deallocate heap memory
     if(_image != NULL) // Attention: wxWidgets used NULL and not nullptr
     {
         delete _image;
+        std::cout << "Deleted the image." << std::endl;
         _image = NULL;
     }
 }
@@ -45,6 +47,81 @@ ChatBot::~ChatBot()
 //// STUDENT CODE
 ////
 
+    // Task 2 copy constructor
+    ChatBot::ChatBot(const ChatBot &source)
+    {
+        std::cout << "In ChatBot copy constructor.\n";
+        std::cout << "Copying content of instance " << &source << " to instance "  << this << std::endl;
+
+        if(source._image != NULL)
+        {
+            _image = new wxBitmap(*source._image);
+        }
+        _currentNode = source._currentNode;
+        _rootNode = source._rootNode;
+        _chatLogic = source._chatLogic;
+
+    }
+    
+    // Task 2 copy assignment operator
+    ChatBot &ChatBot::operator=(const ChatBot &source)
+    {
+        std::cout << "In ChatBot copy assignment operator.\n";
+        std::cout << "Assigning content of instance " << &source << " to instance "  << this << std::endl;
+
+        if(this == &source) return *this;
+        
+        if(_image != NULL) delete _image; // free current image resource
+
+        _image = new wxBitmap(*source._image);
+        _currentNode = source._currentNode;
+        _rootNode = source._rootNode;
+        _chatLogic = source._chatLogic;
+        return *this;
+    }
+
+    // Task 2 move constructor
+    ChatBot::ChatBot(ChatBot &&source)
+    {
+        std::cout << "In ChatBot move constructor.\n";
+        std::cout << "Moving content of instance " << &source << " to instance "  << this << std::endl;
+        
+        _image = source._image;
+        _currentNode = source._currentNode;
+        _rootNode = source._rootNode;
+        _chatLogic = source._chatLogic;
+
+        // Remove the source pointers
+        source._image = nullptr;
+        source._currentNode = nullptr;
+        source._rootNode = nullptr;
+        source._chatLogic = nullptr;
+
+    }
+
+    // Task 2 move assignment operator
+    ChatBot &ChatBot::operator=(ChatBot &&source)
+    {
+        std::cout << "In ChatBot move assignment operator.\n";
+        std::cout << "Moving content of instance " << &source << " to instance "  << this << std::endl;
+    
+    if (this == &source) return *this;
+
+    if (_image != NULL) delete _image; // free current image resource
+
+    _image = source._image;
+    _currentNode = source._currentNode;
+    _rootNode = source._rootNode;
+    _chatLogic = source._chatLogic;
+
+    // Remove the source pointers
+    source._image = nullptr;
+    source._currentNode = nullptr;
+    source._rootNode = nullptr;
+    source._chatLogic = nullptr;
+    
+    return *this;
+    } 
 ////
 //// EOF STUDENT CODE
 
@@ -94,7 +171,9 @@ void ChatBot::SetCurrentNode(GraphNode *node)
     std::string answer = answers.at(dis(generator));
 
     // send selected node answer to user
+    // std::cout << "Before sending message.\n";
     _chatLogic->SendMessageToUser(answer);
+    // std::cout << "After sending message.\n";
 }
 
 int ChatBot::ComputeLevenshteinDistance(std::string s1, std::string s2)
