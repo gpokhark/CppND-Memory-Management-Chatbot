@@ -45,12 +45,13 @@ ChatLogic::~ChatLogic()
     //     delete *it;
     // }
     */
-
+    /* Task 4 part 1 exclusive ownership of child edges to graphnode
     // delete all edges
-    for (auto it = std::begin(_edges); it != std::end(_edges); ++it)
-    {
-        delete *it;
-    }
+    // for (auto it = std::begin(_edges); it != std::end(_edges); ++it)
+    // {
+    //     delete *it;
+    // }
+    */
 
     ////
     //// EOF STUDENT CODE
