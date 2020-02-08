@@ -6,6 +6,7 @@
 #include "chatlogic.h"
 #include "chatgui.h"
 
+#include <iostream>
 // size of chatbot window
 const int width = 414;
 const int height = 736;
@@ -107,6 +108,7 @@ END_EVENT_TABLE()
 ChatBotPanelDialog::ChatBotPanelDialog(wxWindow *parent, wxWindowID id)
     : wxScrolledWindow(parent, id)
 {
+    std::cout << "In ChatBotPanelDialog Constructor.\n";
     // sizer will take care of determining the needed scroll size
     _dialogSizer = new wxBoxSizer(wxVERTICAL);
     this->SetSizer(_dialogSizer);
@@ -118,7 +120,8 @@ ChatBotPanelDialog::ChatBotPanelDialog(wxWindow *parent, wxWindowID id)
     ////
 
     // create chat logic instance
-    _chatLogic = new ChatLogic(); 
+    // _chatLogic = new ChatLogic(); // Task 1
+    _chatLogic = std::make_unique<ChatLogic>();
 
     // pass pointer to chatbot dialog so answers can be displayed in GUI
     _chatLogic->SetPanelDialogHandle(this);
@@ -134,8 +137,9 @@ ChatBotPanelDialog::~ChatBotPanelDialog()
 {
     //// STUDENT CODE
     ////
+    std::cout << "In ChatBotPanelDialog Destructor.\n";
 
-    delete _chatLogic;
+    // delete _chatLogic; // Task 1
 
     ////
     //// EOF STUDENT CODE
@@ -144,6 +148,7 @@ ChatBotPanelDialog::~ChatBotPanelDialog()
 void ChatBotPanelDialog::AddDialogItem(wxString text, bool isFromUser)
 {
     // add a single dialog element to the sizer
+    // std::cout << "In ChatBotPanelDialog::AddDialogItem.\n";
     ChatBotPanelDialogItem *item = new ChatBotPanelDialogItem(this, text, isFromUser);
     _dialogSizer->Add(item, 0, wxALL | (isFromUser == true ? wxALIGN_LEFT : wxALIGN_RIGHT), 8);
     _dialogSizer->Layout();
@@ -163,6 +168,7 @@ void ChatBotPanelDialog::AddDialogItem(wxString text, bool isFromUser)
 void ChatBotPanelDialog::PrintChatbotResponse(std::string response)
 {
     // convert string into wxString and add dialog element
+    // std::cout << "In ChatBotPanelDialog::PrintChatbotResponse.\n";
     wxString botText(response.c_str(), wxConvUTF8);
     AddDialogItem(botText, false);
 }
@@ -195,6 +201,7 @@ ChatBotPanelDialogItem::ChatBotPanelDialogItem(wxPanel *parent, wxString text, b
     : wxPanel(parent, -1, wxPoint(-1, -1), wxSize(-1, -1), wxBORDER_NONE)
 {
     // retrieve image from chatbot
+    // std::cout << "In ChatBotPanelDialogItem::ChatBotPanelDialogItem.\n";
     wxBitmap *bitmap = isFromUser == true ? nullptr : ((ChatBotPanelDialog*)parent)->GetChatLogicHandle()->GetImageFromChatbot(); 
 
     // create image and text
