@@ -5,6 +5,7 @@
 #include <string>
 #include <iostream>
 #include "chatbot.h"
+#include "chatlogic.h"
 #include <memory>
 
 
@@ -26,7 +27,7 @@ private:
     std::vector<GraphEdge *> _parentEdges; // edges to preceding nodes 
     //Task 4
     // ChatBot *_chatBot;
-    std::unique_ptr<ChatBot> _chatBot;
+    ChatBot _chatBot;
 
     ////
     //// EOF STUDENT CODE
@@ -50,14 +51,15 @@ public:
     // proprietary functions
     void AddToken(std::string token); // add answers to list
     void AddEdgeToParentNode(GraphEdge *edge);
-    void AddEdgeToChildNode(GraphEdge *edge);
+    // void AddEdgeToChildNode(GraphEdge *edge);
+    void AddEdgeToChildNode(std::unique_ptr<GraphEdge> &&edge);
 
     //// STUDENT CODE
     ////
 
     // Task 4
     // void MoveChatbotHere(ChatBot *chatbot);
-    void MoveChatbotHere(std::unique_ptr<ChatBot> chatbot);
+    void MoveChatbotHere(ChatBot &&chatbot);
 
     ////
     //// EOF STUDENT CODE

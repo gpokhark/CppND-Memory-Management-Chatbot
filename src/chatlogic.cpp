@@ -135,7 +135,7 @@ void ChatLogic::LoadAnswerGraphFromFile(std::string filename)
                         // check if node with this ID exists already
                         // Task 3
                         // auto newNode = std::find_if(_nodes.begin(), _nodes.end(), [&id](GraphNode *node) { return node->GetID() == id; });
-                        auto newNode = std::find_if(_nodes.begin(), _nodes.end(), [&id](std::unique_ptr<GraphNode> &node) { return node.get()->GetID() == id; });
+                        auto newNode = std::find_if(_nodes.begin(), _nodes.end(), [&](std::unique_ptr<GraphNode> &node) { return node.get()->GetID() == id; });
 
                         // create new element if ID does not yet exist
                         if (newNode == _nodes.end())
@@ -173,20 +173,22 @@ void ChatLogic::LoadAnswerGraphFromFile(std::string filename)
                             auto childNode = std::find_if(_nodes.begin(), _nodes.end(), [&childToken](std::unique_ptr<GraphNode> &node) { return node.get()->GetID() == std::stoi(childToken->second); });
 
                             // create new edge
-                            GraphEdge *edge = new GraphEdge(id);
+                            // GraphEdge *edge = new GraphEdge(id);
+                            std::unique_ptr<GraphEdge> edge = std::make_unique<GraphEdge>(id);
+
                             // Task 3
                             // edge->SetChildNode(*childNode);
                             // edge->SetParentNode(*parentNode);
                             edge->SetChildNode((*childNode).get());
                             edge->SetParentNode((*parentNode).get());
-                            _edges.push_back(edge);
+                            _edges.push_back(edge.get());
 
                             // find all keywords for current node
                             AddAllTokensToElement("KEYWORD", tokens, *edge);
 
                             // store reference in child node and parent node
-                            (*childNode)->AddEdgeToParentNode(edge);
-                            (*parentNode)->AddEdgeToChildNode(edge);
+                            (*childNode)->AddEdgeToParentNode(edge.get());
+                            (*parentNode)->AddEdgeToChildNode(std::move(edge));
                         }
 
                         ////
@@ -232,13 +234,15 @@ void ChatLogic::LoadAnswerGraphFromFile(std::string filename)
             }
         }
     }
-    std::unique_ptr<ChatBot> chatBot = std::make_unique<ChatBot>("../images/chatbot.png");
-    chatBot->SetChatLogicHandle(this);
-    _chatBot = chatBot.get();    
-    // add chatbot to graph root node
-    chatBot->SetRootNode(rootNode);
-    // rootNode->MoveChatbotHere(_chatBot);
-    rootNode->MoveChatbotHere(std::move(chatBot));
+    // Creating ChatBot object on stack
+    auto stackBot = ChatBot("../images/chatbot.png");
+
+    // Setting the root node for the object (rootNode is the raw pointer from a unique_ptr, does this cause ownership problems?)
+    stackBot.SetRootNode(rootNode);
+    stackBot.SetChatLogicHandle(this);
+
+    // Moving the ChatBot instance into the root node, along with the pointer to the ChatBot object owned by ChatLogic
+    rootNode->MoveChatbotHere(std::move(stackBot));
     
     ////
     //// EOF STUDENT CODE
@@ -251,13 +255,13 @@ void ChatLogic::SetPanelDialogHandle(ChatBotPanelDialog *panelDialog)
 
 void ChatLogic::SetChatbotHandle(ChatBot *chatbot)
 {
-    std::cout << "ChatLogic::SetChatbotHandle()\n";
+    // std::cout << "ChatLogic::SetChatbotHandle()\n";
     _chatBot = chatbot;
 }
 
 void ChatLogic::SendMessageToChatbot(std::string message)
 {
-    std::cout << "ChatLogic::SendMessageToChatbot()\n";
+    // std::cout << "ChatLogic::SendMessageToChatbot()\n";
     _chatBot->ReceiveMessageFromUser(message);
 }
 

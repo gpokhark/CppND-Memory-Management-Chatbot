@@ -53,10 +53,14 @@ ChatBot::~ChatBot()
         std::cout << "In ChatBot copy constructor.\n";
         std::cout << "Copying content of instance " << &source << " to instance "  << this << std::endl;
 
-        if(source._image != NULL)
-        {
-            _image = new wxBitmap(*source._image);
-        }
+    if (source._image == NULL) // If source image is null
+    {
+        _image = NULL;
+    }
+    else 
+    {
+        _image = new wxBitmap(*(source._image)); // wxBitmap copy constuctor, load onto heap
+    }
         _currentNode = source._currentNode;
         _rootNode = source._rootNode;
         _chatLogic = source._chatLogic;
